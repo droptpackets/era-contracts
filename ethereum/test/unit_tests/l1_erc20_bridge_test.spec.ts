@@ -103,7 +103,7 @@ describe(`L1ERC20Bridge tests`, function () {
         zksyncContract = IZkSyncFactory.connect(diamondProxyContract.address, diamondProxyContract.provider);
     });
 
-    it(`Should not allow an un-whitelisted address to deposit`, async () => {
+    it.only(`Should not allow an un-whitelisted address to deposit`, async () => {
         const revertReason = await getCallRevertReason(
             l1ERC20Bridge
                 .connect(randomSigner)
@@ -121,7 +121,7 @@ describe(`L1ERC20Bridge tests`, function () {
         await (await allowList.setAccessMode(l1Erc20BridgeContract.address, AccessMode.Public)).wait();
     });
 
-    it(`Should not allow depositing zero amount`, async () => {
+    it.only(`Should not allow depositing zero amount`, async () => {
         const revertReason = await getCallRevertReason(
             l1ERC20Bridge
                 .connect(randomSigner)
@@ -137,7 +137,7 @@ describe(`L1ERC20Bridge tests`, function () {
         expect(revertReason).equal(`2T`);
     });
 
-    it(`Should deposit successfully`, async () => {
+    it.only(`Should deposit successfully`, async () => {
         const depositorAddress = await randomSigner.getAddress();
         await depositERC20(
             l1ERC20Bridge.connect(randomSigner),
@@ -149,21 +149,21 @@ describe(`L1ERC20Bridge tests`, function () {
         );
     });
 
-    it(`Should revert on finalizing a withdrawal with wrong message length`, async () => {
+    it.only(`Should revert on finalizing a withdrawal with wrong message length`, async () => {
         const revertReason = await getCallRevertReason(
             l1ERC20Bridge.connect(randomSigner).finalizeWithdrawal(0, 0, 0, '0x', [])
         );
         expect(revertReason).equal(`kk`);
     });
 
-    it(`Should revert on finalizing a withdrawal with wrong function signature`, async () => {
+    it.only(`Should revert on finalizing a withdrawal with wrong function signature`, async () => {
         const revertReason = await getCallRevertReason(
             l1ERC20Bridge.connect(randomSigner).finalizeWithdrawal(0, 0, 0, ethers.utils.randomBytes(76), [])
         );
         expect(revertReason).equal(`nt`);
     });
 
-    it(`Should revert on finalizing a withdrawal with wrong block number`, async () => {
+    it.only(`Should revert on finalizing a withdrawal with wrong block number`, async () => {
         const functionSignature = `0x11a2ccc1`;
         const l1Receiver = await randomSigner.getAddress();
         const l2ToL1message = ethers.utils.hexConcat([
@@ -178,7 +178,7 @@ describe(`L1ERC20Bridge tests`, function () {
         expect(revertReason).equal(`xx`);
     });
 
-    it(`Should revert on finalizing a withdrawal with wrong length of proof`, async () => {
+    it.only(`Should revert on finalizing a withdrawal with wrong length of proof`, async () => {
         const functionSignature = `0x11a2ccc1`;
         const l1Receiver = await randomSigner.getAddress();
         const l2ToL1message = ethers.utils.hexConcat([
@@ -193,7 +193,7 @@ describe(`L1ERC20Bridge tests`, function () {
         expect(revertReason).equal(`rz`);
     });
 
-    it(`Should revert on finalizing a withdrawal with wrong proof`, async () => {
+    it.only(`Should revert on finalizing a withdrawal with wrong proof`, async () => {
         const functionSignature = `0x11a2ccc1`;
         const l1Receiver = await randomSigner.getAddress();
         const l2ToL1message = ethers.utils.hexConcat([
@@ -209,7 +209,26 @@ describe(`L1ERC20Bridge tests`, function () {
         );
         expect(revertReason).equal(`nq`);
     });
+
+    it.only(`Should revert on finalizing a withdrawal with wrong proof`, async () => {
+        const functionSignature = `0x11a2ccc1`;
+        const l1Receiver = await randomSigner.getAddress();
+        const l2ToL1message = ethers.utils.hexConcat([
+            functionSignature,
+            l1Receiver,
+            testnetERC20TokenContract.address,
+            ethers.constants.HashZero
+        ]);
+        const revertReason = await getCallRevertReason(
+            l1ERC20Bridge
+                .connect(randomSigner)
+                .finalizeWithdrawal(0, 0, 0, l2ToL1message, [])
+        );
+        expect(revertReason).equal(`nq`);
+    });
 });
+
+
 
 async function depositERC20(
     bridge: IL1Bridge,

@@ -3,6 +3,7 @@
 pragma solidity ^0.8.13;
 
 import "@openzeppelin/contracts/utils/math/Math.sol";
+import "@openzeppelin/contracts/utils/Strings.sol";
 
 import "../interfaces/IMailbox.sol";
 import "../libraries/Merkle.sol";
@@ -120,7 +121,7 @@ contract MailboxFacet is Base, IMailbox {
         require(hashedLog != L2_L1_LOGS_TREE_DEFAULT_LEAF_HASH, "tw");
         // Check that the proof length is exactly the same as tree height, to prevent
         // any shorter/longer paths attack on the Merkle path validation
-        require(_proof.length == L2_TO_L1_LOG_MERKLE_TREE_HEIGHT, "rz");
+        require(_proof.length == L2_TO_L1_LOG_MERKLE_TREE_HEIGHT, "rz"); //Strings.toString(L2_TO_L1_LOG_MERKLE_TREE_HEIGHT))
 
         bytes32 calculatedRootHash = Merkle.calculateRoot(_proof, _index, hashedLog);
         bytes32 actualRootHash = s.l2LogsRootHashes[_blockNumber];

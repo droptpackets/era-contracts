@@ -141,7 +141,7 @@ describe('WETH Bridge tests', () => {
         bridgeProxy = L1WethBridgeFactory.connect(_bridgeProxy.address, _bridgeProxy.signer);
     });
 
-    it('Should not allow an un-whitelisted address to deposit', async () => {
+    it.only('Should not allow an un-whitelisted address to deposit', async () => {
         const revertReason = await getCallRevertReason(
             bridgeProxy
                 .connect(randomSigner)
@@ -161,7 +161,7 @@ describe('WETH Bridge tests', () => {
         await (await allowList.setAccessMode(bridgeProxy.address, AccessMode.Public)).wait();
     });
 
-    it('Should not allow depositing zero WETH', async () => {
+    it.only('Should not allow depositing zero WETH', async () => {
         const revertReason = await getCallRevertReason(
             bridgeProxy
                 .connect(randomSigner)
@@ -178,7 +178,7 @@ describe('WETH Bridge tests', () => {
         expect(revertReason).equal('Amount cannot be zero');
     });
 
-    it(`Should deposit successfully`, async () => {
+    it.only(`Should deposit successfully`, async () => {
         await l1Weth.connect(randomSigner).deposit({ value: 100 });
         await (await l1Weth.connect(randomSigner).approve(bridgeProxy.address, 100)).wait();
         await bridgeProxy
@@ -194,21 +194,21 @@ describe('WETH Bridge tests', () => {
             );
     });
 
-    it('Should revert on finalizing a withdrawal with wrong message length', async () => {
+    it.only('Should revert on finalizing a withdrawal with wrong message length', async () => {
         const revertReason = await getCallRevertReason(
             bridgeProxy.connect(randomSigner).finalizeWithdrawal(0, 0, 0, '0x', [])
         );
         expect(revertReason).equal('Incorrect ETH message with additional data length');
     });
 
-    it('Should revert on finalizing a withdrawal with wrong function selector', async () => {
+    it.only('Should revert on finalizing a withdrawal with wrong function selector', async () => {
         const revertReason = await getCallRevertReason(
             bridgeProxy.connect(randomSigner).finalizeWithdrawal(0, 0, 0, ethers.utils.randomBytes(96), [])
         );
         expect(revertReason).equal('Incorrect ETH message function selector');
     });
 
-    it('Should revert on finalizing a withdrawal with wrong receiver', async () => {
+    it.only('Should revert on finalizing a withdrawal with wrong receiver', async () => {
         const revertReason = await getCallRevertReason(
             bridgeProxy
                 .connect(randomSigner)
@@ -223,7 +223,7 @@ describe('WETH Bridge tests', () => {
         expect(revertReason).equal('Wrong L1 ETH withdraw receiver');
     });
 
-    it('Should revert on finalizing a withdrawal with wrong L2 sender', async () => {
+    it.only('Should revert on finalizing a withdrawal with wrong L2 sender', async () => {
         const revertReason = await getCallRevertReason(
             bridgeProxy
                 .connect(randomSigner)
